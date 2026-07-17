@@ -213,14 +213,14 @@ body[dir=rtl] .restnote{font-family:var(--f-ar)}
 .cihint{font-size:11px;color:var(--muted);margin:11px 0;text-align:center;line-height:1.5}
 body[dir=rtl] .cihint,body[dir=rtl] .cilabel{font-family:var(--f-ar)}
 .chip.cust{border-color:var(--green);background:var(--green-t);color:var(--green-d);font-weight:600}
-#splash{position:fixed;inset:0;z-index:1000;background:radial-gradient(circle at 50% 38%,#143761 0%,var(--navy) 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .45s ease;cursor:pointer}
+#splash{position:fixed;inset:0;z-index:1000;background:radial-gradient(circle at 50% 40%,#0d2138 0%,#050d18 78%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .45s ease;cursor:pointer}
 #splash.gone{opacity:0;pointer-events:none}
 .sp-inner{display:flex;flex-direction:column;align-items:center;animation:spIn .5s cubic-bezier(.2,.8,.2,1)}
-.sp-mark{width:82px;height:82px;margin-bottom:20px;filter:drop-shadow(0 10px 26px rgba(0,0,0,.4))}
-.sp-name{font-family:var(--f-ar);font-size:46px;font-weight:700;color:#fff;line-height:1;text-shadow:0 2px 12px rgba(0,0,0,.3)}
-.sp-sub{font-family:var(--f-num);font-size:14px;letter-spacing:.45em;color:#48dcf7;margin-top:10px;font-weight:700;padding-inline-start:.45em}
-.sp-by{position:absolute;bottom:52px;font-size:14px;color:#e7f0f8;font-family:var(--f-ui);text-align:center;padding:0 24px;line-height:1.5}
-.sp-by b{color:#fff;font-weight:700}
+.sp-mark{width:92px;height:92px;margin-bottom:22px;filter:drop-shadow(0 8px 30px rgba(47,206,132,.35))}
+.sp-name{font-family:var(--f-ar);font-size:52px;font-weight:700;color:#fff;line-height:1;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.sp-sub{font-family:var(--f-num);font-size:15px;letter-spacing:.5em;color:#5fe6ff;margin-top:12px;font-weight:700;padding-inline-start:.5em}
+.sp-by{position:absolute;bottom:54px;font-size:15px;color:#ffffff;font-family:var(--f-ui);text-align:center;padding:0 24px;line-height:1.5;font-weight:500}
+.sp-by b{color:#5fe6ff;font-weight:700}
 @keyframes spIn{from{opacity:0;transform:translateY(12px) scale(.95)}to{opacity:1;transform:none}}
 .hide{display:none!important}
 @media (max-width:400px){.readout .big{font-size:52px}.intro h1{font-size:26px}}
@@ -241,13 +241,6 @@ body[dir=rtl] .cihint,body[dir=rtl] .cilabel{font-family:var(--f-ar)}
     <div class="sp-sub">MIZAN</div>
   </div>
   <div class="sp-by">Powered by <b>ENG.Qutaibah Almansouri</b></div>
-</div>
-<div id="splash">
-  <div class="sp-inner">
-    <svg class="sp-mark" viewBox="0 0 32 32" fill="none"><path d="M16 4v22" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M9 26h14" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M16 8 6 13c0 3.3 2.2 5 5 5s5-1.7 5-5L16 8Z" fill="rgba(255,255,255,.15)" stroke="#7DE0AE" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8l10 5c0 3.3-2.2 5-5 5s-5-1.7-5-5L16 8Z" fill="rgba(255,255,255,.15)" stroke="#F3B77C" stroke-width="2.2" stroke-linejoin="round"/><circle cx="16" cy="6" r="2.3" fill="#fff"/></svg>
-    <div class="sp-name">ميزان<span>MIZAN</span></div>
-    <div class="sp-by">Powered by ENG.Qutaibah Almansouri</div>
-  </div>
 </div>
 <header>
   <div class="hbar">
@@ -956,7 +949,14 @@ async function init(){
   render();
 }
 init();
-(function(){var s=document.getElementById('splash');if(!s)return;var hide=function(){if(s.classList.contains('gone'))return;s.classList.add('gone');setTimeout(function(){s.style.display='none';},450);};setTimeout(hide,1800);s.addEventListener('click',hide);})();
+(function(){
+  var s=document.getElementById('splash');if(!s)return;
+  var killed=false;
+  function kill(){if(killed)return;killed=true;s.classList.add('gone');setTimeout(function(){if(s&&s.parentNode)s.parentNode.removeChild(s);},450);}
+  setTimeout(kill,1800);
+  s.addEventListener('click',kill);
+  s.addEventListener('touchstart',kill,{passive:true});
+})();
 </script>
 </body>
 </html>
