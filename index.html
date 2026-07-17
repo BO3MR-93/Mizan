@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ميزان · Mizan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF1EB; --card:#FFFFFF; --ink:#18211C; --ink2:#3A4640;
+  --green:#1B9E57; --green-d:#137A42; --green-t:#E6F4EC;
+  --amber:#E0842A; --amber-t:#FBEEDD;
+  --muted:#6C7A72; --line:#DFE5DE; --line2:#EDF1EC;
+  --prot:#1B9E57; --carb:#E0A72A; --fat:#5E82C4;
+  --shadow:0 1px 2px rgba(24,33,28,.04),0 8px 24px rgba(24,33,28,.06);
+  --r:16px;
+  --f-num:'Space Grotesk',ui-monospace,'SF Mono',Menlo,monospace;
+  --f-ui:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --f-ar:'IBM Plex Sans Arabic','IBM Plex Sans','Segoe UI',Tahoma,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body[dir="rtl"]{font-family:var(--f-ar)}
+body{line-height:1.55;min-height:100vh}
+.wrap{max-width:620px;margin:0 auto;padding:0 16px 120px}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:rgba(238,241,235,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+.hbar{max-width:620px;margin:0 auto;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.01em}
+.brand .mark{width:26px;height:26px;flex:none}
+.brand .nm{font-size:19px}
+.brand .nm small{color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-inline-start:2px}
+.langtog{display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;font-size:12.5px;font-weight:600}
+.langtog button{border:0;background:transparent;color:var(--muted);padding:5px 12px;border-radius:999px;cursor:pointer;font-family:inherit;font-weight:600;transition:.18s}
+.langtog button.on{background:var(--ink);color:#fff}
+
+/* generic */
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--green-d)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.num{font-family:var(--f-num);font-feature-settings:"tnum" 1;letter-spacing:-.02em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:var(--green);color:#fff;font-family:inherit;font-weight:600;font-size:15px;padding:14px 20px;cursor:pointer;transition:.18s;width:100%}
+.btn:hover{background:var(--green-d)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.sec{background:var(--ink);}
+.btn.sec:hover{background:#000}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--line2)}
+.btn.sm{width:auto;padding:9px 15px;font-size:13.5px;border-radius:10px}
+
+/* screen transition */
+.screen{animation:rise .45s cubic-bezier(.2,.7,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* intro / form */
+.intro{padding:26px 4px 10px}
+.intro h1{font-size:30px;line-height:1.12;letter-spacing:-.02em;margin-bottom:10px;font-weight:700}
+.intro h1 .hl{color:var(--green)}
+.intro p{color:var(--ink2);font-size:15px;max-width:44ch}
+.formcard{padding:20px 18px;margin-top:18px}
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.field>label{display:block;font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:7px}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:11px;padding:12px 6px;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;transition:.16s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.seg button .ic{font-size:17px}
+.seg button.on{border-color:var(--green);background:var(--green-t);color:var(--green-d);box-shadow:inset 0 0 0 1px var(--green)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.inp{position:relative}
+.inp input,select{width:100%;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:13px 14px;font-family:var(--f-num);font-size:16px;color:var(--ink);outline:none;transition:.16s;-webkit-appearance:none;appearance:none}
+body[dir=rtl] select{background-position:left 12px center}
+select{font-family:inherit;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236C7A72' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-inline-end:36px}
+.inp input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-t)}
+.inp .unit{position:absolute;top:50%;transform:translateY(-50%);inset-inline-end:14px;color:var(--muted);font-size:12.5px;font-weight:600;pointer-events:none;font-family:var(--f-ui)}
+body[dir=rtl] .inp .unit{font-family:var(--f-ar)}
+
+/* dashboard hero */
+.hero{padding:22px 20px 20px;margin-top:18px;position:relative;overflow:hidden}
+.hero .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.readout{margin-top:6px;display:flex;align-items:baseline;gap:10px}
+.readout .big{font-family:var(--f-num);font-size:60px;font-weight:600;line-height:.95;letter-spacing:-.03em;color:var(--ink)}
+.readout .un{font-size:14px;color:var(--muted);font-weight:600}
+.rule{height:3px;background:linear-gradient(90deg,var(--amber),var(--amber) 60%,transparent);border-radius:2px;margin:14px 0 4px;width:74px}
+.subline{font-size:13px;color:var(--ink2)}
+.subline b{font-family:var(--f-num);color:var(--ink)}
+
+/* macro bar */
+.macros{margin-top:16px}
+.mbar{display:flex;height:15px;border-radius:8px;overflow:hidden;gap:2px;background:var(--line2)}
+.mbar span{display:block;height:100%}
+.mlegend{display:flex;justify-content:space-between;gap:8px;margin-top:12px}
+.mleg{flex:1;text-align:center}
+.mleg .dot{width:8px;height:8px;border-radius:3px;display:inline-block;margin-inline-end:5px;vertical-align:middle}
+.mleg .lb{font-size:11.5px;color:var(--muted);font-weight:600}
+.mleg .vv{font-family:var(--f-num);font-size:18px;font-weight:600;margin-top:2px}
+.mleg .vv small{font-size:11px;color:var(--muted);font-weight:500}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.mini{padding:16px 16px}
+.mini .eyebrow{margin-bottom:8px}
+.mini .v{font-family:var(--f-num);font-size:30px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:baseline;gap:6px}
+.mini .v small{font-size:13px;color:var(--muted);font-weight:500;font-family:var(--f-ui)}
+body[dir=rtl] .mini .v small{font-family:var(--f-ar)}
+.mini .hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+.water .drops{margin-top:9px;display:flex;gap:4px;flex-wrap:wrap}
+.water .drop{width:12px;height:16px;border-radius:0 0 50% 50%/0 0 60% 60%;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--line);transition:.2s}
+.water .drop.full{background:#57A9E0}
+
+.sectitle{display:flex;align-items:center;gap:9px;margin:28px 2px 12px}
+.sectitle .bar{width:4px;height:19px;border-radius:3px;background:var(--green)}
+.sectitle h2{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.sectitle .sub{font-size:12px;color:var(--muted);margin-inline-start:auto;font-weight:500}
+
+/* tabs */
+.tabs{display:flex;gap:6px;background:var(--line2);padding:5px;border-radius:13px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:transparent;color:var(--ink2);font-family:inherit;font-weight:600;font-size:13.5px;padding:10px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.16s}
+.tabs button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.tabs button svg{width:16px;height:16px}
+
+.pad{padding:18px}
+/* photo */
+.drop-zone{border:1.5px dashed var(--line);border-radius:14px;padding:26px 18px;text-align:center;cursor:pointer;transition:.16s;background:var(--line2)}
+.drop-zone:hover{border-color:var(--green);background:var(--green-t)}
+.drop-zone svg{width:30px;height:30px;color:var(--green);margin-bottom:8px}
+.drop-zone .t{font-weight:600;font-size:14.5px}
+.drop-zone .s{font-size:12px;color:var(--muted);margin-top:3px}
+.preview{margin-top:14px;border-radius:12px;overflow:hidden;position:relative;border:1px solid var(--line)}
+.preview img{width:100%;display:block;max-height:280px;object-fit:cover}
+
+/* result */
+.result{margin-top:14px;border:1px solid var(--green);background:var(--green-t);border-radius:14px;padding:16px;animation:rise .3s}
+.result .rt{font-weight:700;font-size:15px;margin-bottom:2px}
+.result .rc{display:flex;align-items:baseline;gap:8px;margin:6px 0 4px}
+.result .rc .n{font-family:var(--f-num);font-size:38px;font-weight:600;color:var(--green-d);letter-spacing:-.02em}
+.result .rc .u{font-size:13px;color:var(--green-d);font-weight:600}
+.result .rm{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-top:6px}
+.result .rm b{font-family:var(--f-num)}
+.result .note{font-size:12px;color:var(--muted);margin-top:8px;font-style:italic}
+
+/* ingredients */
+.ing{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line2)}
+.ing:last-child{border-bottom:0}
+.ing .nm{flex:1;font-size:14px;font-weight:500}
+.ing .nm small{display:block;color:var(--muted);font-size:11px;font-weight:400;font-family:var(--f-num)}
+.ing .gin{position:relative;width:104px;flex:none}
+.ing .gin input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 34px 9px 11px;font-family:var(--f-num);font-size:15px;text-align:start;outline:none}
+body[dir=rtl] .ing .gin input{padding:9px 11px 9px 34px}
+.ing .gin input:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-t)}
+.ing .gin .g{position:absolute;top:50%;transform:translateY(-50%);inset-inline-end:11px;font-size:11px;color:var(--muted);font-weight:600;pointer-events:none}
+.ing .kc{width:58px;text-align:end;font-family:var(--f-num);font-size:14px;color:var(--ink2);font-weight:500;flex:none}
+.totrow{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:2px solid var(--ink)}
+.totrow .tl{font-weight:700;font-size:15px}
+.totrow .tv{font-family:var(--f-num);font-size:30px;font-weight:600;color:var(--green-d);letter-spacing:-.02em}
+.totrow .tv small{font-size:13px;color:var(--muted);font-weight:500}
+
+/* log */
+.logcard{padding:18px;margin-top:0}
+.logrow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line2)}
+.logrow .ln{flex:1;font-size:14px}
+.logrow .lk{font-family:var(--f-num);font-weight:600;font-size:14px}
+.logrow .del{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px;border-radius:6px}
+.logrow .del:hover{background:var(--amber-t);color:var(--amber)}
+.logempty{text-align:center;color:var(--muted);font-size:13.5px;padding:16px 0}
+.balance{display:flex;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.balance .cell{text-align:center;flex:1}
+.balance .cell .k{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.balance .cell .v{font-family:var(--f-num);font-size:24px;font-weight:600;margin-top:3px}
+.balance .cell .v.rem{color:var(--green-d)}
+.balance .cell .v.over{color:var(--amber)}
+.balance .cell.mid{border-inline:1px solid var(--line)}
+
+.spinner{width:17px;height:17px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.spinner.dark{border-color:var(--line);border-top-color:var(--green)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{background:var(--amber-t);color:#8a4b12;border:1px solid #f0cfa5;border-radius:11px;padding:11px 14px;font-size:13px;margin-top:12px}
+.foot{text-align:center;color:var(--muted);font-size:11px;margin-top:26px;line-height:1.6}
+.fav{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2)}
+.fav:last-child{border-bottom:0}
+.fav .favadd{width:30px;height:30px;flex:none;border:1px solid var(--green);color:var(--green-d);background:var(--green-t);border-radius:9px;font-size:19px;line-height:1;cursor:pointer;font-family:var(--f-num);transition:.16s}
+.fav .favadd:hover{background:var(--green);color:#fff}
+.fav .fn{flex:1;font-size:14px}
+.fav .fk{font-family:var(--f-num);font-weight:600;font-size:14px;color:var(--ink2)}
+.toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:.3s;z-index:100;box-shadow:0 8px 30px rgba(0,0,0,.25);max-width:88%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.pick{display:flex;flex-wrap:wrap;gap:7px;max-height:172px;overflow-y:auto;padding:3px 1px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:.14s}
+.chip:hover{border-color:var(--green);background:var(--green-t);color:var(--green-d)}
+.ingdel{width:22px;height:22px;flex:none;border:0;background:var(--line2);color:var(--muted);border-radius:7px;font-size:15px;line-height:1;cursor:pointer;transition:.14s}
+.ingdel:hover{background:var(--amber-t);color:var(--amber)}
+.totmac{font-family:var(--f-ui);font-size:10.5px;color:var(--muted);font-weight:500;margin-top:3px}
+body[dir=rtl] .totmac{font-family:var(--f-ar)}
+.tabs button{font-size:12px;padding:9px 3px;gap:5px}
+.tabs button svg{width:14px;height:14px;flex:none}
+.ritem{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line2)}
+.ritem:last-child{border-bottom:0}
+.ritem .rinfo{flex:1;min-width:0}
+.ritem .rn{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+.ritem .rmac{display:block;font-size:10px;color:var(--muted);margin-top:1px}
+body[dir=rtl] .ritem .rmac{font-family:var(--f-ar)}
+.ritem .rkc{font-family:var(--f-num);font-weight:600;font-size:15px;color:var(--green-d);white-space:nowrap;flex:none}
+.ritem .radd{width:30px;height:30px;flex:none;border:1px solid var(--green);color:var(--green-d);background:var(--green-t);border-radius:9px;font-size:19px;line-height:1;cursor:pointer;font-family:var(--f-num);transition:.14s}
+.ritem .radd:hover{background:var(--green);color:#fff}
+.restnote{background:var(--amber-t);border:1px solid #f0cfa5;color:#8a5a1e;border-radius:11px;padding:10px 13px;font-size:11.5px;line-height:1.5;margin-bottom:14px}
+body[dir=rtl] .restnote{font-family:var(--f-ar)}
+.cicard{background:var(--line2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;animation:rise .25s}
+.ci-in{width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:11px 12px;font-family:var(--f-num);font-size:15px;outline:none;color:var(--ink)}
+.ci-in:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-t)}
+.cilabel{font-size:11px;font-weight:600;color:var(--ink2);margin:9px 2px 4px}
+.cigrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cihint{font-size:11px;color:var(--muted);margin:11px 0;text-align:center;line-height:1.5}
+body[dir=rtl] .cihint,body[dir=rtl] .cilabel{font-family:var(--f-ar)}
+.chip.cust{border-color:var(--green);background:var(--green-t);color:var(--green-d);font-weight:600}
+#splash{position:fixed;inset:0;z-index:1000;background:radial-gradient(circle at 50% 38%,#123152 0%,var(--navy) 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease}
+#splash.gone{opacity:0;pointer-events:none}
+.sp-inner{display:flex;flex-direction:column;align-items:center;animation:spIn .85s cubic-bezier(.2,.8,.2,1)}
+.sp-mark{width:78px;height:78px;margin-bottom:20px;filter:drop-shadow(0 10px 26px rgba(0,0,0,.35))}
+.sp-name{font-family:var(--f-ar);font-size:42px;font-weight:700;color:#fff;line-height:1}
+.sp-sub{font-family:var(--f-num);font-size:13px;letter-spacing:.45em;color:var(--cyan2);margin-top:9px;font-weight:600;padding-inline-start:.45em}
+.sp-by{position:absolute;bottom:46px;font-size:12px;color:#8ea2b8;font-family:var(--f-ui);text-align:center;padding:0 20px}
+.sp-by b{color:#d3e2ef;font-weight:600}
+@keyframes spIn{from{opacity:0;transform:translateY(15px) scale(.93)}to{opacity:1;transform:none}}
+.hide{display:none!important}
+@media (max-width:400px){.readout .big{font-size:52px}.intro h1{font-size:26px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body dir="rtl">
+<div id="splash">
+  <div class="sp-inner">
+    <svg class="sp-mark" viewBox="0 0 32 32" fill="none">
+      <path d="M16 4v22" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M9 26h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M16 8 6 13c0 3.3 2.2 5 5 5s5-1.7 5-5L16 8Z" fill="rgba(47,206,132,.22)" stroke="#2fce84" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M16 8l10 5c0 3.3-2.2 5-5 5s-5-1.7-5-5L16 8Z" fill="rgba(240,163,90,.22)" stroke="#f0a35a" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="16" cy="6" r="2.3" fill="#fff"/>
+    </svg>
+    <div class="sp-name">ميزان</div>
+    <div class="sp-sub">MIZAN</div>
+  </div>
+  <div class="sp-by">Powered by <b>ENG.Qutaibah Almansouri</b></div>
+</div>
+<div id="splash">
+  <div class="sp-inner">
+    <svg class="sp-mark" viewBox="0 0 32 32" fill="none"><path d="M16 4v22" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M9 26h14" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M16 8 6 13c0 3.3 2.2 5 5 5s5-1.7 5-5L16 8Z" fill="rgba(255,255,255,.15)" stroke="#7DE0AE" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8l10 5c0 3.3-2.2 5-5 5s-5-1.7-5-5L16 8Z" fill="rgba(255,255,255,.15)" stroke="#F3B77C" stroke-width="2.2" stroke-linejoin="round"/><circle cx="16" cy="6" r="2.3" fill="#fff"/></svg>
+    <div class="sp-name">ميزان<span>MIZAN</span></div>
+    <div class="sp-by">Powered by ENG.Qutaibah Almansouri</div>
+  </div>
+</div>
+<header>
+  <div class="hbar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 32" fill="none"><path d="M16 4v22" stroke="#18211C" stroke-width="2.4" stroke-linecap="round"/><path d="M9 26h14" stroke="#18211C" stroke-width="2.4" stroke-linecap="round"/><path d="M16 8 6 13c0 3.3 2.2 5 5 5s5-1.7 5-5L16 8Z" fill="#E6F4EC" stroke="#1B9E57" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8l10 5c0 3.3-2.2 5-5 5s-5-1.7-5-5L16 8Z" fill="#FBEEDD" stroke="#E0842A" stroke-width="2.2" stroke-linejoin="round"/><circle cx="16" cy="6" r="2.3" fill="#18211C"/></svg>
+      <span class="nm" id="brandName">ميزان<small>MIZAN</small></span>
+    </div>
+    <div class="langtog">
+      <button id="btnAr" class="on" onclick="setLang('ar')">عربي</button>
+      <button id="btnEn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="app"></div>
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+/* ---------------- i18n ---------------- */
+const T = {
+  ar:{
+    tagline:"حاسبة السعرات والتغذية بدقة — احسب احتياجك، وحلّل أكلك بالصورة أو بالوزن.",
+    setup_h:["احسب سعراتك", "بدقة"], setup_p:"عبّي بياناتك ونحسب لك سعراتك اليومية، توزيع البروتين والكارب والدهون، وكمية الماي المناسبة لك.",
+    sex:"الجنس", male:"رجل", female:"امرأة", age:"العمر", yr:"سنة", height:"الطول", weight:"الوزن",
+    activity:"مستوى النشاط", goal:"الهدف",
+    act:{sed:"قليل الحركة (مكتبي)", light:"نشاط خفيف (١–٣ أيام)", mod:"نشاط متوسط (٣–٥ أيام)", high:"نشاط عالي (٦–٧ أيام)", ath:"نشاط شديد (رياضي)"},
+    goals:{lose2:"إنقاص دهون (سريع)", lose1:"إنقاص دهون (معتدل)", maint:"المحافظة على الوزن", gain:"زيادة عضل"},
+    calc:"احسب احتياجي",
+    daily:"سعراتك اليومية", perday:"سعرة / اليوم", target_lose:"عجز معتدل لخسارة صحية", target_maint:"سعرات المحافظة", target_gain:"فائض للبناء العضلي",
+    maint_is:"سعرات المحافظة عندك", 
+    macros_h:"توزيع الماكروز اليومي", protein:"بروتين", carbs:"كارب", fat:"دهون", gram:"غ",
+    water:"الماء", water_u:"لتر / اليوم", cups:"≈ {n} كوب", water_hint:"زد ٥٠٠ مل بأيام التمرين",
+    bmr:"أيض الجسم", bmr_u:"سعرة عند الراحة", edit:"تعديل البيانات",
+    food_h:"احسب سعرات أكلتك", food_sub:"٣ طرق",
+    tab_dish:"أكلة جاهزة", tab_build:"ركّب بنفسك", pick_dish:"اختر أكلة", dish_hint2:"اختر أكلة، وعدّل جرامات كل مكوّن حسب ميزانك.", search_ing:"دوّر عن مكوّن…", build_hint:"أضف مكوّنات، وحط جرام كل واحد من الميزان.", no_ing_yet:"ما أضفت مكوّنات بعد — اختر من فوق.", custom_meal:"وجبة مركّبة", tab_rest:"مطاعم", pick_rest:"اختر مطعم", rest_hint:"اختر مطعم، واضغط + عشان تضيف الصنف ليومك.", rest_note:"⚠︎ الأرقام هني تقديرية حسب نوع الأكلة (المطاعم ما تنشر أرقام رسمية). تبي دقة؟ استخدم \"ركّب بنفسك\" وزن أكلتك بالميزان.", add_ing:"➕ أضف مكوّن ناقص", ci_name:"اسم المكوّن (مثلاً آيس كريم فلان)", ci_kcal:"سعرات لكل ١٠٠ غرام", ci_p:"بروتين", ci_c:"كارب", ci_f:"دهون", ci_hint:"اكتب القيم من العلبة أو من بحث سريع — تنحفظ عندك دائم وتطلع حسبتها مضبوطة.", ci_save:"احفظ المكوّن", ci_added:"انحفظ وأُضيف ✓",
+    ph_t:"صوّر أو ارفع صورة الأكل", ph_s:"نحلّلها ونعطيك السعرات التقريبية",
+    analyze:"حلّل الصورة", analyzing:"جاري التحليل…",
+    add_day:"أضف ليومي", added:"أُضيف ✓",
+    dish_ph:"اكتب اسم الأكلة (مثال: كبسة لحم)",
+    get_ing:"اعرض المكوّنات", getting:"جاري…",
+    dish_hint:"نعطيك مكوّنات الأكلة، وانت حط الجرامات من الميزان وتطلع السعرات بالضبط.",
+    total:"الإجمالي", kcal:"سعرة",
+    today_h:"سجل اليوم", consumed:"المستهلك", remaining:"المتبقّي", over:"تجاوزت", of_target:"من {n}", target_w:"الهدف", save:"احفظ", saved:"محفوظ ✓", saved_meals:"الوجبات المحفوظة", no_saved:"ما عندك وجبات محفوظة بعد — احفظ وجبة من نتائجك عشان تضيفها بسرعة.", export:"تصدير اليوم", clear_day:"مسح اليوم", copied:"تم النسخ ✓",
+    log_empty:"ما أضفت شي بعد — حلّل أكلة وأضفها هني.",
+    err_img:"اختر صورة أول.", err_api:"ما قدرنا نحلل الحين. جرّب مرة ثانية.", err_dish:"ما قدرنا نجيب المكوّنات. جرّب اسم أوضح.",
+    result:"النتيجة", per:"لكل", protein_s:"بروتين", carbs_s:"كارب", fat_s:"دهون",
+    disc:"تقديرات إرشادية للمساعدة فقط، مو بديل عن استشارة مختص تغذية أو طبيب.",
+    ai_note:"الميزات الذكية (الصورة والمكوّنات) تشتغل داخل تطبيق Claude."
+  },
+  en:{
+    tagline:"Precise calorie & nutrition calculator — get your needs, then log food by photo or by weight.",
+    setup_h:["Calculate your", "calories"], setup_p:"Enter your details and we'll compute your daily calories, protein/carb/fat split, and how much water you need.",
+    sex:"Sex", male:"Male", female:"Female", age:"Age", yr:"yrs", height:"Height", weight:"Weight",
+    activity:"Activity level", goal:"Goal",
+    act:{sed:"Sedentary (desk job)", light:"Light (1–3 days/wk)", mod:"Moderate (3–5 days/wk)", high:"Active (6–7 days/wk)", ath:"Very active (athlete)"},
+    goals:{lose2:"Lose fat (faster)", lose1:"Lose fat (moderate)", maint:"Maintain weight", gain:"Gain muscle"},
+    calc:"Calculate",
+    daily:"Your daily calories", perday:"kcal / day", target_lose:"Moderate deficit for healthy loss", target_maint:"Maintenance calories", target_gain:"Surplus for lean gaining",
+    maint_is:"Your maintenance",
+    macros_h:"Daily macro split", protein:"Protein", carbs:"Carbs", fat:"Fat", gram:"g",
+    water:"Water", water_u:"L / day", cups:"≈ {n} cups", water_hint:"Add 500 ml on training days",
+    bmr:"BMR", bmr_u:"kcal at rest", edit:"Edit details",
+    food_h:"Calculate your food", food_sub:"3 ways",
+    tab_dish:"Preset dish", tab_build:"Build your own", pick_dish:"Choose a dish", dish_hint2:"Pick a dish, then adjust each ingredient's grams to your scale.", search_ing:"Search an ingredient…", build_hint:"Add ingredients, then set each one's grams from your scale.", no_ing_yet:"No ingredients yet — pick from above.", custom_meal:"Custom meal", tab_rest:"Restaurants", pick_rest:"Choose a restaurant", rest_hint:"Pick a restaurant, then tap + to add an item to your day.", rest_note:"⚠︎ These numbers are estimates by dish type (restaurants don't publish official data). Want accuracy? Use \"Build your own\" and weigh your food.", add_ing:"➕ Add a missing ingredient", ci_name:"Ingredient name (e.g. a specific ice cream)", ci_kcal:"Calories per 100g", ci_p:"Protein", ci_c:"Carbs", ci_f:"Fat", ci_hint:"Enter values from the package or a quick search — saved permanently for accurate math.", ci_save:"Save ingredient", ci_added:"Saved & added ✓",
+    ph_t:"Snap or upload a food photo", ph_s:"We'll analyze it and estimate the calories",
+    analyze:"Analyze photo", analyzing:"Analyzing…",
+    add_day:"Add to day", added:"Added ✓",
+    dish_ph:"Type the dish name (e.g. chicken kabsa)",
+    get_ing:"Show ingredients", getting:"Loading…",
+    dish_hint:"We list the dish's ingredients — you enter grams from your scale and get exact calories.",
+    total:"Total", kcal:"kcal",
+    today_h:"Today's log", consumed:"Consumed", remaining:"Remaining", over:"Over by", of_target:"of {n}", target_w:"Target", save:"Save", saved:"Saved ✓", saved_meals:"Saved meals", no_saved:"No saved meals yet — save one from your results to add it quickly.", export:"Export day", clear_day:"Clear day", copied:"Copied ✓",
+    log_empty:"Nothing added yet — analyze a food and add it here.",
+    err_img:"Pick a photo first.", err_api:"Couldn't analyze right now. Try again.", err_dish:"Couldn't get ingredients. Try a clearer name.",
+    result:"Result", per:"per", protein_s:"protein", carbs_s:"carbs", fat_s:"fat",
+    disc:"Guidance estimates only — not a substitute for a dietitian or doctor.",
+    ai_note:"Smart features (photo & ingredients) run inside the Claude app."
+  }
+};
+const ACT={sed:1.2,light:1.375,mod:1.55,high:1.725,ath:1.9};
+const GOAL={lose2:-500,lose1:-250,maint:0,gain:300};
+
+let state={lang:'ar', profile:null, tab:'dish', dishName:'', ingredients:null, log:[], favs:[], custom:[]};
+const $=(s,r=document)=>r.querySelector(s);
+const t=()=>T[state.lang];
+const nf=n=>Math.round(n).toLocaleString(state.lang==='ar'?'ar-EG':'en-US');
+
+function setLang(l){
+  state.lang=l; document.body.dir = l==='ar'?'rtl':'ltr'; document.documentElement.lang=l;
+  $('#btnAr').classList.toggle('on',l==='ar'); $('#btnEn').classList.toggle('on',l==='en');
+  $('#brandName').innerHTML = l==='ar'?'ميزان<small>MIZAN</small>':'Mizan<small>ميزان</small>';
+  Store.set('mizan:lang',l);
+  render();
+}
+
+/* ---------------- calculations ---------------- */
+function compute(p){
+  const bmr = 10*p.weight + 6.25*p.height - 5*p.age + (p.sex==='male'?5:-161);
+  const tdee = bmr*ACT[p.activity];
+  let target = tdee + GOAL[p.goal];
+  const floor = p.sex==='male'?1500:1200;
+  if(target<floor) target=floor;
+  const perKg = (p.goal==='lose2'||p.goal==='lose1')?2.0:1.8;
+  const protein = perKg*p.weight;
+  const fat = (target*0.25)/9;
+  let carbs = (target - protein*4 - fat*9)/4; if(carbs<0)carbs=0;
+  const waterL = p.weight*35/1000;
+  return {bmr,tdee,target,protein,carbs,fat,waterL,cups:Math.round(waterL*1000/250)};
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  $('#foot').textContent = t().disc;
+  state.profile ? renderDash() : renderSetup();
+}
+
+function renderSetup(){
+  const L=t(), p=state._draft||{sex:'male',activity:'sed',goal:'lose1'};
+  state._draft=p;
+  $('#app').innerHTML = `
+  <div class="screen">
+    <div class="intro">
+      <div class="eyebrow">${L.tagline.split('—')[0].trim()}</div>
+      <h1>${L.setup_h[0]} <span class="hl">${L.setup_h[1]}</span></h1>
+      <p>${L.setup_p}</p>
+    </div>
+    <div class="card formcard">
+      <div class="field">
+        <label>${L.sex}</label>
+        <div class="seg" id="sexSeg">
+          <button data-v="male" class="${p.sex==='male'?'on':''}"><span class="ic">♂</span>${L.male}</button>
+          <button data-v="female" class="${p.sex==='female'?'on':''}"><span class="ic">♀</span>${L.female}</button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="row2">
+          <div><label>${L.age}</label><div class="inp"><input id="age" type="number" inputmode="numeric" value="${p.age||''}" placeholder="30"><span class="unit">${L.yr}</span></div></div>
+          <div><label>${L.weight}</label><div class="inp"><input id="weight" type="number" inputmode="decimal" value="${p.weight||''}" placeholder="80"><span class="unit">kg</span></div></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>${L.height}</label><div class="inp"><input id="height" type="number" inputmode="numeric" value="${p.height||''}" placeholder="170"><span class="unit">cm</span></div>
+      </div>
+      <div class="field">
+        <label>${L.activity}</label>
+        <select id="activity">${Object.keys(L.act).map(k=>`<option value="${k}" ${p.activity===k?'selected':''}>${L.act[k]}</option>`).join('')}</select>
+      </div>
+      <div class="field">
+        <label>${L.goal}</label>
+        <select id="goal">${Object.keys(L.goals).map(k=>`<option value="${k}" ${p.goal===k?'selected':''}>${L.goals[k]}</option>`).join('')}</select>
+      </div>
+      <div class="field" style="margin-top:22px">
+        <button class="btn" id="calcBtn">${L.calc}</button>
+      </div>
+    </div>
+  </div>`;
+
+  $('#sexSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    p.sex=b.dataset.v; $('#sexSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  });
+  const sync=()=>{p.age=+$('#age').value; p.weight=+$('#weight').value; p.height=+$('#height').value; p.activity=$('#activity').value; p.goal=$('#goal').value;};
+  ['age','weight','height'].forEach(id=>$('#'+id).oninput=sync);
+  ['activity','goal'].forEach(id=>$('#'+id).onchange=sync);
+  $('#calcBtn').onclick=()=>{
+    sync();
+    if(!p.age||!p.weight||!p.height||p.age<10||p.age>100||p.weight<30||p.height<100){
+      $('#calcBtn').insertAdjacentHTML('afterend',`<div class="err" id="fe">${state.lang==='ar'?'راجع الأرقام: العمر والوزن والطول مطلوبة وصحيحة.':'Check your numbers: age, weight and height are required.'}</div>`);
+      setTimeout(()=>{const e=$('#fe');if(e)e.remove();},3500); return;
+    }
+    state.profile={...p, ...compute(p)}; Store.set('mizan:profile',state.profile); window.scrollTo({top:0,behavior:'smooth'}); render();
+  };
+}
+
+function macroBar(m){
+  const pk=m.protein*4, ck=m.carbs*4, fk=m.fat*9, tot=pk+ck+fk||1;
+  return `<div class="mbar">
+    <span style="width:${pk/tot*100}%;background:var(--prot)"></span>
+    <span style="width:${ck/tot*100}%;background:var(--carb)"></span>
+    <span style="width:${fk/tot*100}%;background:var(--fat)"></span></div>`;
+}
+
+function renderDash(){
+  const L=t(), m=state.profile;
+  const goalLabel = (m.goal==='maint')?L.target_maint:(m.goal==='gain')?L.target_gain:L.target_lose;
+  const consumed = state.log.reduce((s,x)=>s+x.kcal,0);
+  $('#app').innerHTML = `
+  <div class="screen">
+    <div class="card hero">
+      <div class="top">
+        <div><div class="eyebrow">${L.daily}</div>
+          <div class="readout"><span class="big">${nf(m.target)}</span><span class="un">${L.perday}</span></div>
+          <div class="rule"></div>
+          <div class="subline">${goalLabel} · ${L.maint_is} <b>${nf(m.tdee)}</b></div>
+        </div>
+        <button class="btn ghost sm" id="editBtn">${L.edit}</button>
+      </div>
+      <div class="macros">
+        <div class="eyebrow" style="color:var(--muted);margin-bottom:9px">${L.macros_h}</div>
+        ${macroBar(m)}
+        <div class="mlegend">
+          <div class="mleg"><div class="lb"><span class="dot" style="background:var(--prot)"></span>${L.protein}</div><div class="vv">${nf(m.protein)}<small> ${L.gram}</small></div></div>
+          <div class="mleg"><div class="lb"><span class="dot" style="background:var(--carb)"></span>${L.carbs}</div><div class="vv">${nf(m.carbs)}<small> ${L.gram}</small></div></div>
+          <div class="mleg"><div class="lb"><span class="dot" style="background:var(--fat)"></span>${L.fat}</div><div class="vv">${nf(m.fat)}<small> ${L.gram}</small></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card mini water">
+        <div class="eyebrow" style="color:#3d86b8">${L.water}</div>
+        <div class="v" style="color:#2f86bd">${m.waterL.toFixed(1)}<small>${L.water_u}</small></div>
+        <div class="drops">${Array.from({length:m.cups}).map(()=>'<span class="drop full"></span>').join('')}</div>
+        <div class="hint">${L.cups.replace('{n}',nf(m.cups))} · ${L.water_hint}</div>
+      </div>
+      <div class="card mini">
+        <div class="eyebrow" style="color:var(--muted)">${L.bmr}</div>
+        <div class="v">${nf(m.bmr)}</div>
+        <div class="hint">${L.bmr_u}</div>
+      </div>
+    </div>
+
+    <div class="sectitle"><span class="bar"></span><h2>${L.food_h}</h2><span class="sub">${L.food_sub}</span></div>
+    <div class="card pad">
+      <div class="tabs">
+        <button class="${state.tab==='dish'?'on':''}" id="tDish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M12 3v3M9 6l1 1.5M15 6l-1 1.5M4 21h16"/></svg>${L.tab_dish}</button>
+        <button class="${state.tab==='build'?'on':''}" id="tBuild"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>${L.tab_build}</button>
+        <button class="${state.tab==='rest'?'on':''}" id="tRest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M5 9l1-4.5h12L19 9M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></svg>${L.tab_rest}</button>
+      </div>
+      <div id="tabBody"></div>
+    </div>
+
+    <div class="sectitle"><span class="bar"></span><h2>${L.saved_meals}</h2></div>
+    <div class="card logcard" id="favCard"></div>
+
+    <div class="sectitle"><span class="bar"></span><h2>${L.today_h}</h2></div>
+    <div class="card logcard" id="logCard"></div>
+  </div>`;
+
+  $('#editBtn').onclick=()=>{state._draft={...state.profile}; state.profile=null; window.scrollTo({top:0}); render();};
+  $('#tDish').onclick=()=>{state.tab='dish';renderTab();};
+  $('#tBuild').onclick=()=>{state.tab='build';renderTab();};
+  $('#tRest').onclick=()=>{state.tab='rest';renderTab();};
+  renderTab(); renderLog(); renderFavs();
+}
+
+function renderTab(){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));
+  const sel = state.tab==='dish'?'#tDish' : state.tab==='build'?'#tBuild' : '#tRest';
+  $(sel).classList.add('on');
+  state.dishName='';
+  state.ingredients = state.tab==='build'? [] : null;
+  if(state.tab==='dish') renderDish();
+  else if(state.tab==='build') renderBuild();
+  else renderRestaurants();
+}
+
+/* ============ FOOD DATABASE — values per 100g (kcal, protein, carbs, fat) ============ */
+const ING = {
+  chicken_b:{ar:"صدر دجاج مطبوخ",en:"Chicken breast (cooked)",k:165,p:31,c:0,f:3.6},
+  chicken_t:{ar:"فخذ دجاج مطبوخ",en:"Chicken thigh (cooked)",k:209,p:26,c:0,f:10.9},
+  lamb:{ar:"لحم غنم مطبوخ",en:"Lamb (cooked)",k:294,p:25,c:0,f:21},
+  beef:{ar:"لحم بقر مطبوخ",en:"Beef, lean (cooked)",k:250,p:26,c:0,f:15},
+  beef_ground:{ar:"لحم مفروم بقر",en:"Ground beef (cooked)",k:254,p:26,c:0,f:16},
+  lamb_ground:{ar:"لحم مفروم غنم",en:"Ground lamb (cooked)",k:282,p:25,c:0,f:20},
+  steak_ribeye:{ar:"ستيك ريب آي مشوي",en:"Ribeye steak (grilled)",k:290,p:25,c:0,f:21},
+  steak_sirloin:{ar:"ستيك سيرلوين مشوي",en:"Sirloin steak (grilled)",k:210,p:29,c:0,f:9},
+  steak_tender:{ar:"ستيك تندرلوين/فيليه مشوي",en:"Tenderloin/Filet (grilled)",k:210,p:30,c:0,f:9},
+  steak_strip:{ar:"ستيك نيويورك ستريب مشوي",en:"NY strip steak (grilled)",k:250,p:27,c:0,f:15},
+  fish:{ar:"سمك أبيض مطبوخ",en:"White fish (cooked)",k:120,p:22,c:0,f:3},
+  fish_grilled:{ar:"سمك مشوي",en:"Grilled fish",k:150,p:25,c:0,f:5},
+  fish_fried:{ar:"سمك مقلي",en:"Fried fish",k:230,p:20,c:8,f:13},
+  salmon:{ar:"سلمون مشوي",en:"Salmon (grilled)",k:230,p:25,c:0,f:14},
+  shrimp:{ar:"روبيان مطبوخ",en:"Shrimp (cooked)",k:99,p:24,c:0,f:0.3},
+  shrimp_grilled:{ar:"ربيان مشوي",en:"Grilled shrimp",k:120,p:24,c:0,f:2},
+  shrimp_fried:{ar:"ربيان مقلي",en:"Fried shrimp",k:250,p:18,c:15,f:13},
+  egg:{ar:"بيض",en:"Egg (whole)",k:155,p:13,c:1.1,f:11},
+  rice_w:{ar:"رز أبيض مطبوخ",en:"White rice (cooked)",k:130,p:2.7,c:28,f:0.3},
+  rice_bas:{ar:"رز بسمتي مطبوخ",en:"Basmati rice (cooked)",k:121,p:3,c:25,f:0.4},
+  bread_ar:{ar:"خبز عربي أبيض",en:"Arabic bread (white)",k:275,p:9,c:56,f:1.2},
+  bread_ar_brown:{ar:"خبز عربي أسمر",en:"Arabic bread (brown)",k:245,p:9,c:48,f:2},
+  bread_barley:{ar:"خبز شعير",en:"Barley bread",k:250,p:8,c:50,f:2},
+  bread_egyptian:{ar:"خبز مصري (بلدي)",en:"Egyptian baladi bread",k:250,p:9,c:50,f:2},
+  bread_iranian:{ar:"خبز إيراني",en:"Iranian bread",k:270,p:8,c:54,f:2},
+  bread_w:{ar:"خبز أبيض (توست)",en:"White bread (toast)",k:265,p:9,c:49,f:3.2},
+  bun_white:{ar:"صمون أبيض",en:"White bun",k:280,p:9,c:50,f:5},
+  bun_brown:{ar:"صمون أسمر",en:"Brown bun",k:250,p:10,c:46,f:4},
+  brioche:{ar:"بريوش",en:"Brioche bun",k:310,p:8,c:48,f:11},
+  bun_potato:{ar:"صمون بطاط",en:"Potato bun",k:280,p:9,c:52,f:4},
+  croissant:{ar:"كرواسون",en:"Croissant",k:406,p:8,c:46,f:21},
+  vermicelli:{ar:"شعيرية مطبوخة",en:"Vermicelli (cooked)",k:124,p:4,c:25,f:0.9},
+  pasta:{ar:"معكرونة مطبوخة",en:"Pasta (cooked)",k:157,p:6,c:31,f:1},
+  oats:{ar:"شوفان جاف",en:"Oats (dry)",k:389,p:17,c:66,f:7},
+  potato:{ar:"بطاطس مسلوقة",en:"Potato (boiled)",k:87,p:2,c:20,f:0.1},
+  fries:{ar:"بطاطس مقلية",en:"French fries",k:312,p:3.4,c:41,f:15},
+  potato_roasted:{ar:"بطاطس مشوية",en:"Roasted potato",k:120,p:2.5,c:25,f:3},
+  potato_mashed:{ar:"بطاطس مهروسة",en:"Mashed potato",k:110,p:2,c:17,f:4},
+  milk:{ar:"حليب كامل",en:"Whole milk",k:61,p:3.2,c:4.8,f:3.3},
+  milk_kdd_full:{ar:"حليب KDD كامل الدسم",en:"KDD milk (full fat)",k:63,p:3.3,c:4.8,f:3.4},
+  milk_kdd_low:{ar:"حليب KDD قليل الدسم",en:"KDD milk (low fat)",k:48,p:3.4,c:5,f:1.8},
+  milk_kdd_skim:{ar:"حليب KDD خالي الدسم",en:"KDD milk (nonfat)",k:35,p:3.4,c:5,f:0.2},
+  milk_alm_full:{ar:"حليب المراعي كامل الدسم",en:"Almarai milk (full fat)",k:63,p:3.3,c:4.8,f:3.4},
+  milk_alm_low:{ar:"حليب المراعي قليل الدسم",en:"Almarai milk (low fat)",k:48,p:3.4,c:5,f:1.8},
+  milk_alm_skim:{ar:"حليب المراعي خالي الدسم",en:"Almarai milk (nonfat)",k:35,p:3.4,c:5,f:0.2},
+  milk_kdcow_full:{ar:"حليب KDCOW كامل الدسم",en:"KDCOW milk (full fat)",k:63,p:3.3,c:4.8,f:3.4},
+  milk_kdcow_low:{ar:"حليب KDCOW قليل الدسم",en:"KDCOW milk (low fat)",k:48,p:3.4,c:5,f:1.8},
+  milk_kdcow_skim:{ar:"حليب KDCOW خالي الدسم",en:"KDCOW milk (nonfat)",k:35,p:3.4,c:5,f:0.2},
+  milk_bugh_evap:{ar:"حليب بو القوس مبخّر",en:"Bu Ghous evaporated milk",k:135,p:7,c:10,f:8},
+  milk_bugh_reg:{ar:"حليب بو القوس عادي",en:"Bu Ghous milk (regular)",k:64,p:3.3,c:5,f:3.4},
+  milk_bugh_hail:{ar:"حليب بو القوس مع هيل",en:"Bu Ghous milk with cardamom",k:100,p:3,c:13,f:4},
+  laban:{ar:"لبن / زبادي",en:"Laban / Yogurt",k:61,p:3.5,c:4.7,f:3.3},
+  roub_greek_full:{ar:"روب يوناني كامل الدسم",en:"Greek yogurt (full fat)",k:97,p:9,c:4,f:5},
+  roub_greek_low:{ar:"روب يوناني قليل الدسم",en:"Greek yogurt (low fat)",k:80,p:10,c:5,f:2},
+  roub_greek_skim:{ar:"روب يوناني خالي الدسم",en:"Greek yogurt (nonfat)",k:59,p:10,c:4,f:0.4},
+  roub_full:{ar:"روب عادي كامل الدسم",en:"Plain yogurt (full fat)",k:61,p:3.5,c:5,f:3.3},
+  roub_low:{ar:"روب عادي قليل الدسم",en:"Plain yogurt (low fat)",k:50,p:4,c:6,f:1.5},
+  roub_skim:{ar:"روب عادي خالي الدسم",en:"Plain yogurt (nonfat)",k:37,p:4,c:5,f:0.2},
+  cheese:{ar:"جبن أبيض",en:"White cheese",k:264,p:18,c:2,f:21},
+  halloumi:{ar:"جبن حلوم",en:"Halloumi",k:330,p:22,c:2,f:26},
+  feta:{ar:"جبن فيتا",en:"Feta cheese",k:264,p:14,c:4,f:21},
+  cheddar:{ar:"جبن شيدر",en:"Cheddar",k:403,p:25,c:1,f:33},
+  cream_cheese:{ar:"جبن كريمي",en:"Cream cheese",k:342,p:6,c:4,f:34},
+  mozzarella:{ar:"جبن موزاريلا",en:"Mozzarella",k:280,p:22,c:2,f:17},
+  labneh:{ar:"لبنة",en:"Labneh",k:174,p:8,c:6,f:13},
+  bechamel:{ar:"بشاميل",en:"Béchamel sauce",k:150,p:4,c:9,f:10},
+  cream_white:{ar:"كريمة بيضاء (صوص)",en:"White cream sauce",k:180,p:3,c:6,f:16},
+  cream_red:{ar:"كريمة حمراء (صوص)",en:"Red cream sauce",k:120,p:3,c:11,f:7},
+  olive_oil:{ar:"زيت زيتون",en:"Olive oil",k:884,p:0,c:0,f:100},
+  veg_oil:{ar:"زيت نباتي",en:"Vegetable oil",k:884,p:0,c:0,f:100},
+  ghee:{ar:"سمن / دهن",en:"Ghee",k:900,p:0,c:0,f:100},
+  butter:{ar:"زبدة",en:"Butter",k:717,p:0.9,c:0.1,f:81},
+  onion:{ar:"بصل",en:"Onion",k:40,p:1.1,c:9,f:0.1},
+  tomato:{ar:"طماط",en:"Tomato",k:18,p:0.9,c:3.9,f:0.2},
+  carrot:{ar:"جزر",en:"Carrot",k:41,p:0.9,c:10,f:0.2},
+  cucumber:{ar:"خيار",en:"Cucumber",k:15,p:0.7,c:3.6,f:0.1},
+  mixed_veg:{ar:"خضار مشكّلة",en:"Mixed vegetables",k:65,p:2.6,c:13,f:0.4},
+  olive_green:{ar:"زيتون أخضر",en:"Green olives",k:145,p:1,c:4,f:15},
+  olive_black:{ar:"زيتون أسود",en:"Black olives",k:115,p:1,c:6,f:11},
+  zaatar:{ar:"زعتر (خلطة)",en:"Za'atar mix",k:350,p:11,c:50,f:13},
+  chickpeas:{ar:"حمص مطبوخ",en:"Chickpeas (cooked)",k:164,p:9,c:27,f:2.6},
+  lentils:{ar:"عدس مطبوخ",en:"Lentils (cooked)",k:116,p:9,c:20,f:0.4},
+  beans:{ar:"فاصوليا مطبوخة",en:"Kidney beans (cooked)",k:127,p:9,c:23,f:0.5},
+  hummus:{ar:"حمص بطحينة",en:"Hummus (dip)",k:166,p:8,c:14,f:10},
+  foul:{ar:"فول مدمّس",en:"Foul (fava beans)",k:110,p:8,c:20,f:0.4},
+  falafel:{ar:"فلافل",en:"Falafel",k:330,p:13,c:29,f:18},
+  nakhi:{ar:"نخي",en:"Nakhi (boiled chickpeas)",k:170,p:9,c:28,f:3},
+  bajella:{ar:"باجلا",en:"Bajella (boiled fava beans)",k:115,p:8,c:20,f:1},
+  jireesh:{ar:"جريش",en:"Jireesh (cracked wheat dish)",k:150,p:7,c:24,f:3},
+  aash:{ar:"آش",en:"Aash",k:130,p:5,c:22,f:2},
+  almonds:{ar:"لوز",en:"Almonds",k:579,p:21,c:22,f:50},
+  raisins:{ar:"زبيب",en:"Raisins",k:299,p:3,c:79,f:0.5},
+  dates:{ar:"تمر",en:"Dates",k:282,p:2.5,c:75,f:0.4},
+  banana:{ar:"موز",en:"Banana",k:89,p:1.1,c:23,f:0.3},
+  apple:{ar:"تفاح",en:"Apple",k:52,p:0.3,c:14,f:0.2},
+  sugar:{ar:"سكر",en:"Sugar",k:387,p:0,c:100,f:0},
+  honey:{ar:"عسل",en:"Honey",k:304,p:0.3,c:82,f:0},
+  icecream_vanilla:{ar:"آيس كريم فانيلا",en:"Vanilla ice cream",k:207,p:3.5,c:24,f:11},
+  icecream_choc:{ar:"آيس كريم شوكولاتة",en:"Chocolate ice cream",k:216,p:3.8,c:28,f:11},
+  gelato:{ar:"جيلاتي",en:"Gelato",k:160,p:4,c:24,f:6},
+  icecream_light:{ar:"آيس كريم لايت",en:"Light ice cream",k:140,p:4,c:22,f:4},
+  vinegar:{ar:"خل",en:"Vinegar",k:20,p:0,c:1,f:0},
+  lemon:{ar:"ليمون",en:"Lemon",k:29,p:1,c:9,f:0.3},
+  black_pepper:{ar:"فلفل أسود",en:"Black pepper",k:251,p:10,c:64,f:3},
+  turmeric:{ar:"كركم",en:"Turmeric",k:312,p:10,c:65,f:3},
+  paprika:{ar:"فلفل أحمر حلو (بابريكا)",en:"Paprika (sweet)",k:282,p:14,c:54,f:13},
+  chili_hot:{ar:"فلفل أحمر حار",en:"Hot chili powder",k:282,p:13,c:50,f:14},
+  coriander:{ar:"كزبرة",en:"Coriander (fresh)",k:23,p:2,c:4,f:0.5},
+  dill:{ar:"شبنت",en:"Dill",k:43,p:3.5,c:7,f:1},
+  ginger:{ar:"زنجبيل",en:"Ginger (fresh)",k:80,p:1.8,c:18,f:0.8},
+  cornflakes:{ar:"كورن فلكس كيلوقز",en:"Kellogg's Corn Flakes",k:357,p:8,c:84,f:1},
+  betty_biscuit:{ar:"بسكوت بيتي بور (المطاحن)",en:"Betty Petit Beurre",k:440,p:8,c:73,f:13},
+  digestive:{ar:"ماكفيتيز دايجستف",en:"McVitie's Digestive",k:470,p:7,c:63,f:21}
+};
+const DISHES = [
+  {ar:"كبسة دجاج",en:"Chicken Kabsa",items:[["rice_bas",250],["chicken_t",200],["veg_oil",20],["onion",40],["tomato",50]]},
+  {ar:"مجبوس لحم",en:"Lamb Majboos",items:[["rice_bas",250],["lamb",200],["ghee",20],["onion",40],["tomato",40]]},
+  {ar:"مندي دجاج",en:"Chicken Mandi",items:[["rice_bas",250],["chicken_t",220],["veg_oil",15]]},
+  {ar:"برياني دجاج",en:"Chicken Biryani",items:[["rice_bas",250],["chicken_b",180],["veg_oil",25],["onion",40],["laban",30]]},
+  {ar:"دجاج مشوي مع رز",en:"Grilled chicken + rice",items:[["rice_w",200],["chicken_b",200],["olive_oil",10]]},
+  {ar:"صيادية سمك",en:"Fish Sayadiya",items:[["rice_w",220],["fish",200],["veg_oil",20],["onion",40]]},
+  {ar:"شاورما دجاج",en:"Chicken Shawarma",items:[["bread_ar",60],["chicken_b",150],["veg_oil",10]]},
+  {ar:"حمص مع خبز",en:"Hummus + bread",items:[["hummus",100],["bread_ar",60],["olive_oil",10]]},
+  {ar:"فول مع خبز",en:"Foul + bread",items:[["foul",150],["bread_ar",60],["olive_oil",10]]},
+  {ar:"شوفان بالحليب والموز",en:"Oats with milk & banana",items:[["oats",50],["milk",200],["banana",100],["honey",15]]}
+];
+function allING(){const m=Object.assign({},ING);(state.custom||[]).forEach(c=>{m[c.key]={ar:c.ar,en:c.en,k:c.k,p:c.p,c:c.c,f:c.f};});return m;}
+function ingObj(key,grams){const d=allING()[key];return {key,name:d[state.lang],k:d.k,p:d.p,c:d.c,f:d.f,grams};}
+
+/* ============ RESTAURANT ITEMS — per item (kcal, protein, carbs, fat) ============ */
+const RESTAURANTS = {
+  canes:{ar:"رايزنق كينز",en:"Raising Cane's",items:[
+    {ar:"٣ أصابع دجاج",en:"3 Chicken Fingers",k:330,p:24,c:16,f:18},
+    {ar:"ساندويتش دجاج",en:"Chicken Sandwich",k:590,p:25,c:48,f:33},
+    {ar:"بطاطس كرنكل",en:"Crinkle Fries",k:420,p:6,c:55,f:20},
+    {ar:"تكساس توست",en:"Texas Toast",k:150,p:4,c:17,f:8}
+  ]},
+  fatcap:{ar:"فات كاب",en:"Fat Cap",items:[
+    {ar:"إف سي برجر",en:"FC Burger",k:620,p:30,c:36,f:38},
+    {ar:"أو جي برجر",en:"OG Burger",k:560,p:28,c:35,f:33},
+    {ar:"ساندويتش بريسكت",en:"Brisket Sandwich",k:680,p:40,c:45,f:38},
+    {ar:"ريش لحم",en:"Beef Ribs",k:750,p:50,c:10,f:58},
+    {ar:"بطاطس كاجن",en:"Cajun Fries",k:450,p:5,c:52,f:24}
+  ]},
+  bf:{ar:"بي أند إف",en:"B+F Open Flame",items:[
+    {ar:"فليم برجر",en:"Flame Burger",k:600,p:30,c:35,f:36},
+    {ar:"دبل فليم برجر",en:"Double Flame Burger",k:850,p:48,c:36,f:55},
+    {ar:"دجاج مشوي",en:"Grilled Chicken",k:520,p:48,c:8,f:32},
+    {ar:"بطاطس",en:"Fries",k:400,p:5,c:50,f:20}
+  ]},
+  nino:{ar:"دا نينو",en:"Trattoria Da Nino",items:[
+    {ar:"بيتزا مارغريتا",en:"Margherita Pizza",k:850,p:34,c:95,f:36},
+    {ar:"باستا كاربونارا",en:"Pasta Carbonara",k:950,p:32,c:90,f:52},
+    {ar:"بيني أرابياتا",en:"Penne Arrabbiata",k:650,p:18,c:95,f:22},
+    {ar:"لازانيا",en:"Lasagna",k:800,p:38,c:60,f:45}
+  ]},
+  lazycat:{ar:"ليزي كات",en:"Lazy Cat",items:[
+    {ar:"برجر",en:"Burger",k:680,p:32,c:42,f:42},
+    {ar:"باستا ترفل",en:"Truffle Pasta",k:900,p:28,c:85,f:52},
+    {ar:"بان كيك",en:"Pancakes",k:720,p:14,c:95,f:32},
+    {ar:"سيزر سلطة",en:"Caesar Salad",k:450,p:30,c:15,f:30}
+  ]},
+  whatpizza:{ar:"وت بيتزا",en:"What Pizza",items:[
+    {ar:"مارغريتا",en:"Margherita",k:850,p:34,c:95,f:36},
+    {ar:"بيبروني",en:"Pepperoni",k:980,p:40,c:95,f:48},
+    {ar:"قطعة بيتزا جبن",en:"Cheese slice",k:285,p:12,c:36,f:10}
+  ]},
+  faham:{ar:"فحم",en:"Faham",items:[
+    {ar:"شيش طاووق",en:"Shish Tawook plate",k:600,p:55,c:25,f:32},
+    {ar:"مشاوي مشكّلة",en:"Mixed Grill",k:900,p:70,c:20,f:60},
+    {ar:"كباب",en:"Kebab plate",k:700,p:50,c:22,f:45},
+    {ar:"نص دجاج مشوي",en:"Grilled half chicken",k:650,p:58,c:5,f:44}
+  ]},
+  mandi:{ar:"مندي الأمير",en:"Mandi Al-Amir",items:[
+    {ar:"مندي دجاج",en:"Chicken Mandi",k:850,p:45,c:90,f:30},
+    {ar:"مندي لحم",en:"Lamb Mandi",k:1100,p:55,c:90,f:55},
+    {ar:"مذبي دجاج",en:"Chicken Madhbi",k:880,p:46,c:88,f:33},
+    {ar:"مدفون لحم",en:"Lamb Madfoon",k:1050,p:52,c:90,f:50}
+  ]},
+  freej:{ar:"فريج صويلح",en:"Freej Swaileh",items:[
+    {ar:"مجبوس دجاج",en:"Chicken Machboos",k:800,p:42,c:95,f:25},
+    {ar:"مجبوس لحم",en:"Meat Machboos",k:950,p:45,c:95,f:42},
+    {ar:"مربيان",en:"Murabyan (shrimp rice)",k:780,p:35,c:95,f:28},
+    {ar:"هريس",en:"Harees",k:450,p:25,c:50,f:15}
+  ]},
+  darobona:{ar:"دار أبونا",en:"Dar Obona",items:[
+    {ar:"مجبوس دياي",en:"Chicken Machboos",k:800,p:42,c:95,f:25},
+    {ar:"مقلوبة",en:"Maqlooba",k:720,p:30,c:90,f:28},
+    {ar:"تشريب",en:"Tashreeb",k:600,p:32,c:55,f:28},
+    {ar:"جريش",en:"Jireesh",k:550,p:28,c:70,f:18}
+  ]},
+  naif:{ar:"نايف",en:"Naif",items:[
+    {ar:"برجر لحم",en:"Beef Burger",k:550,p:28,c:38,f:32},
+    {ar:"برجر دجاج",en:"Chicken Burger",k:520,p:26,c:42,f:28},
+    {ar:"بروست دجاج (٣ قطع)",en:"Broasted Chicken (3 pc)",k:540,p:38,c:22,f:34},
+    {ar:"شاورما دجاج",en:"Chicken Shawarma",k:450,p:25,c:40,f:22},
+    {ar:"بطاطس",en:"Fries",k:380,p:5,c:48,f:19}
+  ]},
+  tahanna:{ar:"تهنّا",en:"Tahanna",items:[
+    {ar:"كبسة لحم",en:"Meat Kabsa",k:950,p:45,c:95,f:42},
+    {ar:"كبسة دجاج",en:"Chicken Kabsa",k:850,p:45,c:90,f:30},
+    {ar:"كبسة سمك",en:"Fish Kabsa",k:800,p:40,c:92,f:25},
+    {ar:"مجبوس دجاج",en:"Chicken Machboos",k:830,p:44,c:93,f:30}
+  ]},
+  ashaz:{ar:"أشاز",en:"Ashaz",items:[
+    {ar:"برياني دجاج",en:"Chicken Biryani",k:750,p:35,c:95,f:28},
+    {ar:"برياني لحم",en:"Mutton Biryani",k:900,p:42,c:95,f:42},
+    {ar:"دجاج كاري (مع رز)",en:"Chicken Curry (with rice)",k:700,p:36,c:70,f:30},
+    {ar:"بتر تشيكن",en:"Butter Chicken",k:490,p:30,c:12,f:35},
+    {ar:"تكا مسالا",en:"Chicken Tikka Masala",k:520,p:32,c:14,f:36}
+  ]},
+  steak:{ar:"ستيك هاوس",en:"Steakhouse",items:[
+    {ar:"ريب آي ٢٨٠غ (لحمة فقط)",en:"Ribeye 10oz (meat only)",k:820,p:71,c:0,f:59},
+    {ar:"نيويورك ستريب ٢٨٠غ",en:"NY Strip 10oz",k:710,p:76,c:0,f:42},
+    {ar:"فيليه/تندرلوين ٢٢٥غ",en:"Filet Mignon 8oz",k:480,p:68,c:0,f:20},
+    {ar:"سيرلوين ٢٢٥غ",en:"Sirloin 8oz",k:480,p:66,c:0,f:20},
+    {ar:"تي-بون ٣٤٠غ",en:"T-bone 12oz",k:920,p:82,c:0,f:65}
+  ]}
+};
+
+/* ------- TAB: preset dish ------- */
+function renderDish(){
+  const L=t();
+  $('#tabBody').innerHTML=`
+    <label style="display:block;font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:7px">${L.pick_dish}</label>
+    <select id="dishSel">
+      <option value="">${L.pick_dish}…</option>
+      ${DISHES.map((d,i)=>`<option value="${i}">${d[state.lang]}</option>`).join('')}
+    </select>
+    <div class="s" style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">${L.dish_hint2}</div>
+    <div id="ingOut"></div>`;
+  $('#dishSel').onchange=e=>{
+    const v=e.target.value;
+    if(v===''){state.ingredients=null;state.dishName='';$('#ingOut').innerHTML='';return;}
+    const d=DISHES[+v];
+    state.dishName=d[state.lang];
+    state.ingredients=d.items.map(([k,g])=>ingObj(k,g));
+    renderIngredients();
+  };
+}
+
+/* ------- TAB: build your own ------- */
+function renderBuild(){
+  const L=t(); const ALL=allING(); const keys=Object.keys(ALL);
+  $('#tabBody').innerHTML=`
+    <div class="inp" style="margin-bottom:10px"><input id="ingSearch" type="text" placeholder="${L.search_ing}"></div>
+    <div class="pick" id="pickList">${keys.map(k=>`<button class="chip${k.indexOf('custom_')===0?' cust':''}" data-k="${k}">${ALL[k][state.lang]}</button>`).join('')}</div>
+    <button class="btn ghost sm" id="addIngBtn" style="width:100%;margin-top:10px">${L.add_ing}</button>
+    <div id="ciForm"></div>
+    <div class="s" style="font-size:12px;color:var(--muted);margin-top:12px;text-align:center">${L.build_hint}</div>
+    <div id="ingOut"></div>`;
+  const search=$('#ingSearch');
+  search.style.fontFamily = state.lang==='ar'?'var(--f-ar)':'var(--f-ui)';
+  search.oninput=()=>{
+    const q=search.value.trim().toLowerCase();
+    $('#pickList').querySelectorAll('.chip').forEach(c=>{
+      const k=c.dataset.k, name=(ALL[k].ar+ALL[k].en).toLowerCase();
+      c.style.display=(!q||name.includes(q))?'':'none';
+    });
+  };
+  $('#pickList').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+    const k=c.dataset.k;
+    if(!state.ingredients) state.ingredients=[];
+    if(!state.ingredients.some(x=>x.key===k)) state.ingredients.push(ingObj(k,100));
+    renderIngredients();
+  });
+  $('#addIngBtn').onclick=toggleCustomForm;
+  if(state.ingredients&&state.ingredients.length) renderIngredients();
+}
+function toggleCustomForm(){
+  const L=t(), f=$('#ciForm');
+  if(f.innerHTML){f.innerHTML='';return;}
+  f.innerHTML=`
+    <div class="cicard">
+      <input id="ciName" class="ci-in" type="text" placeholder="${L.ci_name}">
+      <div class="cilabel">${L.ci_kcal}</div>
+      <input id="ciK" class="ci-in" type="number" inputmode="numeric" placeholder="0">
+      <div class="cigrid3">
+        <div><div class="cilabel">${L.ci_p}</div><input id="ciP" class="ci-in" type="number" inputmode="decimal" placeholder="0"></div>
+        <div><div class="cilabel">${L.ci_c}</div><input id="ciC" class="ci-in" type="number" inputmode="decimal" placeholder="0"></div>
+        <div><div class="cilabel">${L.ci_f}</div><input id="ciF" class="ci-in" type="number" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="cihint">${L.ci_hint}</div>
+      <button class="btn sm" id="ciSave" style="width:100%">${L.ci_save}</button>
+    </div>`;
+  $('#ciName').style.fontFamily = state.lang==='ar'?'var(--f-ar)':'var(--f-ui)';
+  $('#ciSave').onclick=saveCustomIng;
+  $('#ciName').focus();
+}
+function saveCustomIng(){
+  const L=t();
+  const name=$('#ciName').value.trim(), k=+$('#ciK').value;
+  if(!name||!(k>0)){ toast(state.lang==='ar'?'اكتب الاسم والسعرات':'Enter name and calories'); return; }
+  const item={key:'custom_'+Date.now(), ar:name, en:name, k:k, p:+$('#ciP').value||0, c:+$('#ciC').value||0, f:+$('#ciF').value||0};
+  state.custom=state.custom||[]; state.custom.push(item); Store.set('mizan:custom',state.custom);
+  if(!state.ingredients) state.ingredients=[];
+  state.ingredients.push(ingObj(item.key,100));
+  toast(L.ci_added);
+  renderBuild();
+}
+
+/* ------- TAB: restaurants ------- */
+function renderRestaurants(){
+  const L=t(); const keys=Object.keys(RESTAURANTS);
+  $('#tabBody').innerHTML=`
+    <div class="restnote">${L.rest_note}</div>
+    <label style="display:block;font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:7px">${L.pick_rest}</label>
+    <select id="restSel">
+      <option value="">${L.pick_rest}…</option>
+      ${keys.map(k=>`<option value="${k}">${RESTAURANTS[k][state.lang]}</option>`).join('')}
+    </select>
+    <div class="s" style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">${L.rest_hint}</div>
+    <div id="restOut"></div>`;
+  $('#restSel').onchange=e=>{
+    const k=e.target.value; const o=$('#restOut');
+    if(!k){o.innerHTML='';return;}
+    const items=RESTAURANTS[k].items;
+    o.innerHTML=`<div style="margin-top:14px">${items.map((it,i)=>`
+      <div class="ritem">
+        <button class="radd" data-k="${k}" data-i="${i}">+</button>
+        <div class="rinfo"><span class="rn">${it[state.lang]}</span><span class="rmac">${L.protein_s} ${it.p}${L.gram} · ${L.carbs_s} ${it.c}${L.gram} · ${L.fat_s} ${it.f}${L.gram}</span></div>
+        <span class="rkc">${nf(it.k)}<small> ${L.kcal}</small></span>
+      </div>`).join('')}</div>`;
+    o.querySelectorAll('.radd').forEach(b=>b.onclick=()=>{
+      const it=RESTAURANTS[b.dataset.k].items[+b.dataset.i];
+      addLog(RESTAURANTS[b.dataset.k][state.lang]+' — '+it[state.lang], it.k, null);
+      toast(t().added);
+    });
+  };
+}
+
+/* ------- shared ingredient editor ------- */
+function renderIngredients(){
+  const L=t(), ing=state.ingredients;
+  const out=$('#ingOut'); if(!out) return;
+  if(!ing||!ing.length){ out.innerHTML = state.tab==='build'?`<div class="logempty" style="margin-top:14px">${L.no_ing_yet}</div>`:''; return; }
+  out.innerHTML=`
+    <div style="margin-top:16px">
+      ${ing.map((x,i)=>`
+        <div class="ing">
+          <button class="ingdel" data-x="${i}">×</button>
+          <div class="nm">${x.name}<small>${nf(x.k)} ${L.kcal}/100${L.gram}</small></div>
+          <div class="gin"><input type="number" inputmode="numeric" data-i="${i}" value="${x.grams}"><span class="g">${L.gram}</span></div>
+          <div class="kc" id="kc${i}">${nf(x.k*x.grams/100)}</div>
+        </div>`).join('')}
+      <div class="totrow">
+        <div><span class="tl">${L.total}</span><div class="totmac" id="totMac"></div></div>
+        <span class="tv" id="ingTot">0<small> ${L.kcal}</small></span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn sm" id="addIng" style="flex:1">${L.add_day}</button>
+        <button class="btn ghost sm" id="saveIng" style="flex:1">☆ ${L.save}</button>
+      </div>
+    </div>`;
+  const upd=()=>{
+    let tot=0,P=0,C=0,F=0;
+    state.ingredients.forEach((x,i)=>{const r=x.grams/100; tot+=x.k*r; P+=x.p*r; C+=x.c*r; F+=x.f*r; const el=$('#kc'+i); if(el)el.textContent=nf(x.k*r);});
+    $('#ingTot').innerHTML=`${nf(tot)}<small> ${L.kcal}</small>`;
+    $('#totMac').textContent=`${L.protein_s} ${nf(P)}${L.gram} · ${L.carbs_s} ${nf(C)}${L.gram} · ${L.fat_s} ${nf(F)}${L.gram}`;
+  };
+  out.querySelectorAll('.gin input').forEach(inp=>inp.oninput=()=>{ state.ingredients[+inp.dataset.i].grams=+inp.value||0; upd(); });
+  out.querySelectorAll('.ingdel').forEach(b=>b.onclick=()=>{ state.ingredients.splice(+b.dataset.x,1); renderIngredients(); });
+  upd();
+  const mealName=()=> state.dishName || (state.tab==='build'?L.custom_meal:L.total);
+  $('#addIng').onclick=()=>{ const tot=state.ingredients.reduce((s,x)=>s+x.k*x.grams/100,0); addLog(mealName(),Math.round(tot),'#addIng'); };
+  $('#saveIng').onclick=()=>{ const tot=state.ingredients.reduce((s,x)=>s+x.k*x.grams/100,0); saveFav({name:mealName(),kcal:Math.round(tot)},'#saveIng'); };
+}
+
+/* ------- LOG ------- */
+function addLog(name,kcal,btnSel){
+  state.log.push({name,kcal});
+  saveLog();
+  if(btnSel){const b=$(btnSel); if(b){b.textContent=t().added; b.disabled=true;}}
+  renderLog();
+}
+function renderLog(){
+  const L=t(), el=$('#logCard'); if(!el)return;
+  const consumed=state.log.reduce((s,x)=>s+x.kcal,0);
+  const rem=Math.round(state.profile.target-consumed), over=rem<0;
+  el.innerHTML = state.log.length? `
+    ${state.log.map((x,i)=>`<div class="logrow"><span class="ln">${x.name}</span><span class="lk">${nf(x.kcal)}</span><button class="del" data-i="${i}">×</button></div>`).join('')}
+    <div class="balance">
+      <div class="cell"><div class="k">${L.consumed}</div><div class="v">${nf(consumed)}</div></div>
+      <div class="cell mid"><div class="k">${over?L.over:L.remaining}</div><div class="v ${over?'over':'rem'}">${nf(Math.abs(rem))}</div></div>
+      <div class="cell"><div class="k">${L.target_w}</div><div class="v">${nf(state.profile.target)}</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:15px">
+      <button class="btn ghost sm" id="expBtn" style="flex:1">${L.export}</button>
+      <button class="btn ghost sm" id="clrBtn" style="flex:1">${L.clear_day}</button>
+    </div>`
+    : `<div class="logempty">${L.log_empty}</div>`;
+  el.querySelectorAll('.del').forEach(b=>b.onclick=()=>{state.log.splice(+b.dataset.i,1);saveLog();renderLog();});
+  const ex=$('#expBtn'); if(ex) ex.onclick=exportDay;
+  const cl=$('#clrBtn'); if(cl) cl.onclick=()=>{state.log=[];saveLog();renderLog();};
+}
+
+/* ------- persistence + favorites + export ------- */
+const Store={
+  ok:(typeof window!=='undefined'&&window.storage&&typeof window.storage.get==='function'),
+  mem:{},
+  async get(k){try{if(this.ok){const r=await window.storage.get(k);return r&&r.value?JSON.parse(r.value):null;}}catch(e){} return (k in this.mem)?this.mem[k]:null;},
+  async set(k,v){this.mem[k]=v;try{if(this.ok)await window.storage.set(k,JSON.stringify(v));}catch(e){}}
+};
+const todayStr=()=>new Date().toISOString().slice(0,10);
+function saveLog(){Store.set('mizan:log',{date:todayStr(),items:state.log});}
+
+function renderFavs(){
+  const L=t(), el=$('#favCard'); if(!el)return;
+  el.innerHTML = state.favs.length
+    ? state.favs.map((f,i)=>`<div class="fav"><button class="favadd" data-a="${i}">+</button><span class="fn">${f.name}</span><span class="fk">${nf(f.kcal)}</span><button class="del" data-d="${i}">×</button></div>`).join('')
+    : `<div class="logempty">${L.no_saved}</div>`;
+  el.querySelectorAll('.favadd').forEach(b=>b.onclick=()=>{const f=state.favs[+b.dataset.a]; addLog(f.name,f.kcal,null); toast(t().added);});
+  el.querySelectorAll('.del').forEach(b=>b.onclick=()=>{state.favs.splice(+b.dataset.d,1);Store.set('mizan:favs',state.favs);renderFavs();});
+}
+function saveFav(meal,btnSel){
+  if(!state.favs.some(f=>f.name===meal.name&&f.kcal===meal.kcal)) state.favs.push(meal);
+  Store.set('mizan:favs',state.favs);
+  const b=btnSel&&$(btnSel); if(b){b.textContent=t().saved; b.disabled=true;}
+  renderFavs();
+}
+function exportDay(){
+  const L=t(), m=state.profile, brand=state.lang==='ar'?'ميزان':'Mizan';
+  const consumed=state.log.reduce((s,x)=>s+x.kcal,0);
+  const lines=state.log.map(x=>`• ${x.name}: ${nf(x.kcal)} ${L.kcal}`).join('\n');
+  const txt=`${brand} · ${todayStr()}\n\n${lines}\n\n${L.consumed}: ${nf(consumed)} ${L.kcal}\n${L.target_w}: ${nf(m.target)} ${L.kcal}\n${L.remaining}: ${nf(m.target-consumed)} ${L.kcal}`;
+  if(navigator.share){navigator.share({title:brand,text:txt}).catch(()=>{});}
+  else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast(L.copied)).catch(()=>toast(L.copied));}
+  else{toast(L.copied);}
+}
+function toast(msg){
+  const el=document.createElement('div'); el.className='toast'; el.textContent=msg;
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),320);},2200);
+}
+
+async function init(){
+  try{
+    const ln=await Store.get('mizan:lang'); if(ln==='ar'||ln==='en') state.lang=ln;
+    const pr=await Store.get('mizan:profile'); if(pr&&pr.target) state.profile=pr;
+    const fv=await Store.get('mizan:favs'); if(Array.isArray(fv)) state.favs=fv;
+    const cs=await Store.get('mizan:custom'); if(Array.isArray(cs)) state.custom=cs;
+    const lg=await Store.get('mizan:log'); if(lg&&lg.date===todayStr()&&Array.isArray(lg.items)) state.log=lg.items;
+  }catch(e){}
+  if(state.lang==='en'){document.body.dir='ltr';document.documentElement.lang='en';$('#btnAr').classList.remove('on');$('#btnEn').classList.add('on');$('#brandName').innerHTML='Mizan<small>ميزان</small>';}
+  render();
+}
+init();
+setTimeout(function(){var s=document.getElementById('splash');if(s){s.classList.add('gone');setTimeout(function(){if(s)s.style.display='none';},550);}},2300);
+</script>
+</body>
+</html>
