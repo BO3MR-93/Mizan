@@ -906,10 +906,10 @@ function renderLog(){
 
 /* ------- persistence + favorites + export ------- */
 const Store={
-  ok:(typeof window!=='undefined'&&window.storage&&typeof window.storage.get==='function'),
   mem:{},
-  async get(k){try{if(this.ok){const r=await window.storage.get(k);return r&&r.value?JSON.parse(r.value):null;}}catch(e){} return (k in this.mem)?this.mem[k]:null;},
-  async set(k,v){this.mem[k]=v;try{if(this.ok)await window.storage.set(k,JSON.stringify(v));}catch(e){}}
+  ls:(function(){try{var t='__mz_test';window.localStorage.setItem(t,'1');window.localStorage.removeItem(t);return true;}catch(e){return false;}})(),
+  get(k){if(this.ls){try{var v=window.localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){}} return (k in this.mem)?this.mem[k]:null;},
+  set(k,v){this.mem[k]=v;if(this.ls){try{window.localStorage.setItem(k,JSON.stringify(v));}catch(e){}}}
 };
 const todayStr=()=>new Date().toISOString().slice(0,10);
 function saveLog(){Store.set('mizan:log',{date:todayStr(),items:state.log});}
